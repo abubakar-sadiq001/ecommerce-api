@@ -71,7 +71,7 @@ func Load() (*Config, error) {
 			Host:     getEnv("DB_HOST", "localhost"),
 			Port:     getEnv("DB_PORT", "5432"),
 			User:     getEnv("DB_USER", "abubakar-sadiq"),
-			Password: getEnv("DB_PASSWORD", "#Scripter123"),
+			Password: getEnv("DB_PASSWORD", ""),
 			Name:     getEnv("DB_NAME", "ecommerce_shop"),
 			SSLMode:  getEnv("DB_SSL_MODE", "disable"),
 		},

@@ -51,9 +51,13 @@ run:
 dev:
 	go run ./cmd/api
 
-lint:
+lint: format
 	@command -v golangci-lint >/dev/null 2>&1 || { echo "golangci-lint not installed. Installing..."; curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2; }
 	golangci-lint run ./...
+
+format:
+	@gofmt -s -w .	
+	@goimports -w .	
 
 migrate-up:
 	migrate -path db/migrations -database "postgres://postgres:password@localhost:5432/ecommerce_shop?sslmode=disable" up

@@ -37,6 +37,7 @@ help:
 	@echo "  run            Run the Go application"
 	@echo "  dev            Run the Go application in development mode"
 	@echo "  lint           Run golangci-lint for code linting"
+	@echo "  format         Format the code and re-arrange imports"
 	@echo "  migrate-up     Apply database migrations"
 	@echo "  migrate-down   Rollback database migrations"
 	@echo "  docker-up      Start Docker containers"

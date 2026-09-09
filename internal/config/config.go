@@ -38,6 +38,7 @@ type JWTConfig struct {
 	ExpiresIn             time.Duration
 	RefreshTokenExpiresIn time.Duration
 }
+
 type AWSConfig struct {
 	Region          string
 	AccessKeyID     string

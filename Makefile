@@ -55,6 +55,9 @@ migrate-status:
 migrate-version:
 	$(GOOSE) version
 
+migrate-reset:
+	$(GOOSE) reset
+
 
 docker-up:
 	docker compose -f docker/docker-compose.yml up -d

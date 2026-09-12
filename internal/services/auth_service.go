@@ -124,7 +124,7 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 		ExpiresAt: time.Now().Add(s.config.JWT.RefreshTokenExpiresIn),
 	}
 
-	// Insert token in to the DB
+	// Insert token in to the database
 	s.db.Create(&refreshTokenModel)
 
 	// Return auth response

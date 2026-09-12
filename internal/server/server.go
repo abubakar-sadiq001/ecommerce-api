@@ -34,6 +34,17 @@ func (s *Server) SetupRoutes() *gin.Engine {
 	// routes
 	router.GET("/health", s.healthCheck)
 
+	api := router.Group("/api/v1")
+	{ //nolint:gocritic
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", s.register)
+			auth.POST("/login", s.login)
+			auth.POST("/refresh", s.refreshToken)
+			auth.POST("/logout", s.logout)
+		}
+	}
+
 	return router
 }
 

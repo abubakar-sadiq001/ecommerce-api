@@ -82,11 +82,11 @@ func (s *Server) getProfile(c *gin.Context) {
 	userService := services.NewUserService(s.db)
 	profile, err := userService.GetProfile(userID)
 	if err != nil {
-		utils.NotFoundResponse(c, "PUser not found", err)
+		utils.NotFoundResponse(c, "User not found", err)
 		return
 	}
 
-	utils.SuccessResponse(c, "rofile retrieved successfully", profile)
+	utils.SuccessResponse(c, "profile retrieved successfully", profile)
 }
 
 func (s *Server) updateProfile(c *gin.Context) {

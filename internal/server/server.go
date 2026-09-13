@@ -27,21 +27,34 @@ func (s *Server) SetupRoutes() *gin.Engine {
 	router := gin.New()
 
 	// middlewares
-	router.Use(gin.Logger())
-	router.Use(gin.Recovery())
-	router.Use(s.corsMiddleware())
+	// router.Use(gin.Logger())
+	// router.Use(gin.Recovery())
+	// router.Use(s.corsMiddleware())
+	router.Use(gin.Logger(), gin.Recovery(), s.corsMiddleware())
 
 	// routes
 	router.GET("/health", s.healthCheck)
 
 	api := router.Group("/api/v1")
-	{ //nolint:gocritic
+	{ // nolint:gocritic
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", s.register)
 			auth.POST("/login", s.login)
 			auth.POST("/refresh", s.refreshToken)
 			auth.POST("/logout", s.logout)
+		}
+
+		/* creates a sibling group off api at the same URL prefix (/api/v1/) but with authMiddleware tacked on. From that point forward, any subgroup or route registered under protected inherits the auth middleware, while anything registered directly under api does not. */
+		protected := api.Group("/")       // copies [Logger, Recovery, cors]
+		protected.Use(s.authMiddleware()) // appends to protected's slice ONLY
+		{
+			users := protected.Group("/users")
+			{
+				userRoutes := users
+				userRoutes.GET("/profile", s.getProfile)
+				userRoutes.GET("/update_profile", s.updateProfile)
+			}
 		}
 	}
 

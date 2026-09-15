@@ -43,7 +43,7 @@ func (s *Server) updateCategory(c *gin.Context) {
 	utils.SuccessResponse(c, "Category has been updated successfully", response)
 }
 
-func (s *Server) DeleteCategory(c *gin.Context) {
+func (s *Server) deleteCategory(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if id != 0 {
 		utils.BadRequestResponse(c, "Invalid category id", err)
@@ -60,7 +60,7 @@ func (s *Server) DeleteCategory(c *gin.Context) {
 	utils.SuccessResponse(c, "Category has been deleted successfully", nil)
 }
 
-func (s *Server) CreateCategory(c *gin.Context) {
+func (s *Server) createCategory(c *gin.Context) {
 	var req dto.CreateCategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.BadRequestResponse(c, "Invalid request data", err)
@@ -78,7 +78,7 @@ func (s *Server) CreateCategory(c *gin.Context) {
 
 }
 
-func (s *Server) CreateProduct(c *gin.Context) {
+func (s *Server) createProduct(c *gin.Context) {
 	var req dto.CreateProductRequest
 	if err := c.ShouldBindJSON(req); err != nil {
 		utils.BadRequestResponse(c, "Invalid request data", err)
@@ -95,7 +95,7 @@ func (s *Server) CreateProduct(c *gin.Context) {
 	utils.SuccessResponse(c, "Product has been created successfully", response)
 }
 
-func (s *Server) GetProducts(c *gin.Context) {
+func (s *Server) getProducts(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageLimit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
@@ -149,7 +149,7 @@ func (s *Server) updateProduct(c *gin.Context) {
 	utils.SuccessResponse(c, "Product has been updated successfully", response)
 }
 
-func (s *Server) DeleteProduct(c *gin.Context) {
+func (s *Server) deleteProduct(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		utils.BadRequestResponse(c, "Invalid category id", err)

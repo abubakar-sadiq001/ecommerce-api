@@ -61,19 +61,24 @@ func (s *Server) SetupRoutes() *gin.Engine {
 			categories := protected.Group("/categories")
 			{
 				categoryRoutes := categories
-				categoryRoutes.POST("/", s.adminMiddleware(), s.CreateCategory)
+				categoryRoutes.POST("/", s.adminMiddleware(), s.createCategory)
 				categoryRoutes.PUT("/:id", s.adminMiddleware(), s.updateCategory)
-				categoryRoutes.PUT("/:id", s.adminMiddleware(), s.DeleteCategory)
+				categoryRoutes.PUT("/:id", s.adminMiddleware(), s.deleteCategory)
 			}
 
 			// product routes
 			products := protected.Group("/products")
 			{
 				productRoutes := products
-				productRoutes.GET("/categories", s.getCategories)
-				productRoutes.GET("/products", s.GetProducts)
-				productRoutes.GET("/products/:id", s.GetProducts)
+				productRoutes.POST("/", s.getProducts)
+				productRoutes.PUT("/:id", s.updateProduct)
+				productRoutes.DELETE("/:id", s.deleteProduct)
 			}
+
+			// public routes
+			api.GET("/categories", s.getCategories)
+			api.GET("/products", s.getProducts)
+			api.GET("/products/:id", s.getProduct)
 
 		}
 	}

@@ -74,13 +74,12 @@ func (s *Server) SetupRoutes() *gin.Engine {
 				productRoutes.PUT("/:id", s.updateProduct)
 				productRoutes.DELETE("/:id", s.deleteProduct)
 			}
-
-			// public routes
-			api.GET("/categories", s.getCategories)
-			api.GET("/products", s.getProducts)
-			api.GET("/products/:id", s.getProduct)
-
 		}
+
+		// public routes
+		api.GET("/categories", s.getCategories)
+		api.GET("/products", s.getProducts)
+		api.GET("/products/:id", s.getProduct)
 	}
 
 	return router

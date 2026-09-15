@@ -49,12 +49,32 @@ func (s *Server) SetupRoutes() *gin.Engine {
 		protected := api.Group("/")       // copies [Logger, Recovery, cors]
 		protected.Use(s.authMiddleware()) // appends to protected's slice ONLY
 		{
+			// user routes
 			users := protected.Group("/users")
 			{
 				userRoutes := users
 				userRoutes.GET("/profile", s.getProfile)
 				userRoutes.GET("/update_profile", s.updateProfile)
 			}
+
+			// category routes
+			categories := protected.Group("/categories")
+			{
+				categoryRoutes := categories
+				categoryRoutes.POST("/", s.adminMiddleware(), s.CreateCategory)
+				categoryRoutes.PUT("/:id", s.adminMiddleware(), s.updateCategory)
+				categoryRoutes.PUT("/:id", s.adminMiddleware(), s.DeleteCategory)
+			}
+
+			// product routes
+			products := protected.Group("/products")
+			{
+				productRoutes := products
+				productRoutes.GET("/categories", s.getCategories)
+				productRoutes.GET("/products", s.GetProducts)
+				productRoutes.GET("/products/:id", s.GetProducts)
+			}
+
 		}
 	}
 

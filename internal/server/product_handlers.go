@@ -22,7 +22,7 @@ func (s *Server) getCategories(c *gin.Context) {
 
 func (s *Server) updateCategory(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if id != 0 {
+	if err != nil {
 		utils.BadRequestResponse(c, "Invalid category id", err)
 		return
 	}
@@ -34,7 +34,7 @@ func (s *Server) updateCategory(c *gin.Context) {
 	}
 
 	productService := services.NewProductServices(s.db)
-	response, err := productService.GetCategories()
+	response, err := productService.UpdateCategory(uint(id), &req)
 	if err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to update category", err)
 		return
@@ -45,7 +45,7 @@ func (s *Server) updateCategory(c *gin.Context) {
 
 func (s *Server) deleteCategory(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if id != 0 {
+	if err != nil {
 		utils.BadRequestResponse(c, "Invalid category id", err)
 		return
 	}
@@ -80,7 +80,7 @@ func (s *Server) createCategory(c *gin.Context) {
 
 func (s *Server) createProduct(c *gin.Context) {
 	var req dto.CreateProductRequest
-	if err := c.ShouldBindJSON(req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.BadRequestResponse(c, "Invalid request data", err)
 		return
 	}
@@ -111,7 +111,7 @@ func (s *Server) getProducts(c *gin.Context) {
 
 func (s *Server) getProduct(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if id != 0 {
+	if err != nil {
 		utils.BadRequestResponse(c, "Invalid category id", err)
 		return
 	}
@@ -128,7 +128,7 @@ func (s *Server) getProduct(c *gin.Context) {
 
 func (s *Server) updateProduct(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if id != 0 {
+	if err != nil {
 		utils.BadRequestResponse(c, "Invalid category id", err)
 		return
 	}
@@ -152,12 +152,12 @@ func (s *Server) updateProduct(c *gin.Context) {
 func (s *Server) deleteProduct(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		utils.BadRequestResponse(c, "Invalid category id", err)
+		utils.BadRequestResponse(c, "Invalid product id", err)
 		return
 	}
 
 	productService := services.NewProductServices(s.db)
-	if err := productService.DeleteCategory(uint(id)); err != nil {
+	if err := productService.DeleteProduct(uint(id)); err != nil {
 		utils.InternalServerErrorResponse(c, "Faled to delete product", err)
 		return
 	}

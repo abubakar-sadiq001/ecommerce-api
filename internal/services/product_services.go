@@ -178,7 +178,7 @@ func (s *ProductService) UpdateProduct(id uint, req *dto.UpdateProductRequest) (
 }
 
 func (s *ProductService) DeleteProduct(id uint) error {
-	return s.db.Delete(models.Product{}, id).Error
+	return s.db.Delete(&models.Product{}, id).Error
 }
 
 func (s *ProductService) convertToProductResponse(product *models.Product) dto.ProductResponse {

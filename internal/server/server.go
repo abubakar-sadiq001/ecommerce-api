@@ -70,7 +70,7 @@ func (s *Server) SetupRoutes() *gin.Engine {
 			products := protected.Group("/products")
 			{
 				productRoutes := products
-				productRoutes.POST("/", s.adminMiddleware(), s.getProducts)
+				productRoutes.POST("/", s.adminMiddleware(), s.createProduct)
 				productRoutes.PUT("/:id", s.adminMiddleware(), s.updateProduct)
 				productRoutes.DELETE("/:id", s.adminMiddleware(), s.deleteProduct)
 			}

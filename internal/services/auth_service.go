@@ -124,8 +124,13 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 		ExpiresAt: time.Now().Add(s.config.JWT.RefreshTokenExpiresIn),
 	}
 
-	// Insert token in to the database
-	s.db.Create(&refreshTokenModel)
+	// Delete expired tokens or ALL previous tokens for this user first
+	s.db.Where("user_id = ?", user.ID).Delete(&models.RefreshToken{})
+
+	// Insert the new token
+	if err := s.db.Create(&refreshTokenModel).Error; err != nil {
+		return nil, err
+	}
 
 	// Return auth response
 	return &dto.AuthResponse{

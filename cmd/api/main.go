@@ -13,6 +13,7 @@ import (
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/config"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/database"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/server"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
@@ -42,7 +43,11 @@ func main() {
 	defer mainDB.Close()
 	gin.SetMode(cfg.Server.GinMode)
 
-	srv := server.New(cfg, db, &log)
+	authService := services.NewAuthService(db, cfg)
+	productService := services.NewProductServices(db)
+	userService := services.NewUserService(db)
+
+	srv := server.New(cfg, db, &log, authService, productService, userService)
 
 	// initialize parameters for running an HTTP server
 	httpServer := &http.Server{

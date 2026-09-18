@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/services"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -153,5 +154,37 @@ func (s *Server) deleteProduct(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, "Product has been deleted successfully", nil)
+
+}
+
+func (s *Server) uploadProductImage(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.BadRequestResponse(c, "Invalid product id", err)
+		return
+	}
+
+	file, err := c.FormFile("image")
+	if err != nil {
+		utils.BadRequestResponse(c, "No file is uploaded", err)
+		return
+	}
+
+	// uploadProvider := provider.NewLocalUploadProvider(s.config.Upload.Path)
+	// uploadService := services.NewUploadService(uploadProvider)
+
+	url, err := s.uploadService.UploadImage(uint(id), file)
+	if err != nil {
+		utils.BadRequestResponse(c, "Failed to upload file", err)
+		return
+	}
+
+	productService := services.NewProductService(s.db)
+	if err := productService.AddProductImage(uint(id), url, file.Filename); err != nil {
+		utils.InternalServerErrorResponse(c, "Failed to save image record", err)
+		return
+	}
+
+	utils.SuccessResponse(c, "Image uploaded successfully", nil)
 
 }

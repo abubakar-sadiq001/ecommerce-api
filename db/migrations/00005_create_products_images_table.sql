@@ -1,7 +1,6 @@
 -- +goose Up
 CREATE TABLE products_images (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
     product_id INTEGER NOT NULL REFERENCES products (id) ON DELETE CASCADE,
     url VARCHAR(500) NOT NULL,
     alt_text VARCHAR(255),

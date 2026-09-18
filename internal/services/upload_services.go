@@ -19,6 +19,7 @@ func NewUploadService(provider interfaces.UploadProvider) *UploadService {
 	}
 }
 
+// UploadImage validates and uploads an image file to our local storage folder.
 func (p *UploadService) UploadImage(productID uint, file *multipart.FileHeader) (string, error) {
 	// check for valid extension
 	ext := strings.ToLower(filepath.Ext(file.Filename))
@@ -35,9 +36,11 @@ func (p *UploadService) UploadImage(productID uint, file *multipart.FileHeader) 
 
 func isValidImageExt(ext string) bool {
 	validExtensions := []string{"jpg", ".jpeg", ".png", ".gif", ".webp"}
-	for _, xyz := range validExtensions {
-		return xyz != ext
+	for _, validExt := range validExtensions {
+		if ext == validExt {
+			return true
+		}
 	}
 
-	return true
+	return false
 }

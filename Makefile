@@ -58,6 +58,8 @@ migrate-version:
 migrate-reset:
 	$(GOOSE) reset
 
+migrate-status:
+	goose -dir $(MIGRATION_DIR) postgres $(DB_URL) status
 
 docker-up:
 	docker compose -f docker/docker-compose.yml up -d

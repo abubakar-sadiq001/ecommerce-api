@@ -17,12 +17,13 @@ func NewLocalUploadProvider(basePath string) *LocalUploadProvider {
 	}
 }
 
+// UploadFile saves an uploaded file to the local storage path and returns its URL.
 func (p *LocalUploadProvider) UploadFile(file *multipart.FileHeader, path string) (string, error) {
 	// 1. join the base path with the file path
 	fullPath := filepath.Join(p.basePath, path)
 
 	// 2. create a new directory with permission for the specific file using its path name
-	if err := os.Mkdir(filepath.Dir(fullPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
 		return "", err
 	}
 
@@ -36,7 +37,7 @@ func (p *LocalUploadProvider) UploadFile(file *multipart.FileHeader, path string
 	// create destination
 	dst, err := os.Create(fullPath)
 	if err != nil {
-		return ",", err
+		return "", err
 	}
 	defer dst.Close()
 

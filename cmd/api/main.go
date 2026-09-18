@@ -12,6 +12,7 @@ import (
 
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/config"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/database"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/provider"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/server"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/services"
 	"github.com/gin-gonic/gin"
@@ -44,10 +45,11 @@ func main() {
 	gin.SetMode(cfg.Server.GinMode)
 
 	authService := services.NewAuthService(db, cfg)
-	productService := services.NewProductServices(db)
+	productService := services.NewProductService(db)
 	userService := services.NewUserService(db)
+	uploadService := services.NewUploadService(provider.NewLocalUploadProvider(cfg.Upload.Path))
 
-	srv := server.New(cfg, db, &log, authService, productService, userService)
+	srv := server.New(cfg, db, &log, authService, productService, userService, uploadService)
 
 	// initialize parameters for running an HTTP server
 	httpServer := &http.Server{

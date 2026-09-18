@@ -11,7 +11,7 @@ type ProductService struct {
 	db *gorm.DB
 }
 
-func NewProductServices(db *gorm.DB) *ProductService {
+func NewProductService(db *gorm.DB) *ProductService {
 	return &ProductService{
 		db: db,
 	}
@@ -175,6 +175,21 @@ func (s *ProductService) UpdateProduct(id uint, req *dto.UpdateProductRequest) (
 	}
 
 	return response, nil
+}
+
+// AddProductImage saves the image data as new record to the [product_images] table.
+func (s *ProductService) AddProductImage(productID uint, url, altText string) error {
+	var count int64
+	s.db.Model(&models.ProductImage{}).Where("product_id = ?", productID).Count(&count)
+
+	image := models.ProductImage{
+		ProductID: productID,
+		URL:       url,
+		AltText:   altText,
+		IsPrimary: count == 0,
+	}
+
+	return s.db.Create(&image).Error
 }
 
 func (s *ProductService) DeleteProduct(id uint) error {

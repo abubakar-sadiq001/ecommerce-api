@@ -12,6 +12,7 @@ import (
 
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/config"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/database"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/interfaces"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/provider"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/server"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/services"
@@ -47,7 +48,14 @@ func main() {
 	authService := services.NewAuthService(db, cfg)
 	productService := services.NewProductService(db)
 	userService := services.NewUserService(db)
-	uploadService := services.NewUploadService(provider.NewLocalUploadProvider(cfg.Upload.Path))
+
+	var uploadProvider interfaces.UploadProvider
+	if cfg.Upload.UploadProvider == "s3" {
+		uploadProvider = provider.NewS3Provider(cfg)
+	} else {
+		uploadProvider = provider.NewLocalUploadProvider(cfg.Upload.Path)
+	}
+	uploadService := services.NewUploadService(uploadProvider)
 
 	srv := server.New(cfg, db, &log, authService, productService, userService, uploadService)
 

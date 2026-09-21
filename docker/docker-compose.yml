@@ -1,34 +1,37 @@
-# ## This file i like a recipe that describes how to build the application's environment.    
+# ## This file is like a recipe that describes how to run the application
 
-version: "3.8"
+# version: "3.8"
 
 services:
-  postgres:
-    image: postgres:12-alpine
-    container_name: postgres_container
-    environment:
+  postgres: # This is the internal name of the service. Other containers in this file can reach this database just by using the hostname postgres
+    image: postgres:12-alpine #  Tells Docker to download and use the official PostgreSQL version 12 image from docker hub
+    container_name: postgres_container # Gives the actual running container a specific, easy-to-remember name on your system.
+    environment: # Environment Variables. When the Postgres image starts for the first time, it reads these to set up the database automatically. It creates a superuser called postgres, sets the password, and creates an empty database called ecommerce_shop.
       POSTGRES_USER: postgres 
       POSTGRES_PASSWORD: "#Scripter123"
       POSTGRES_DB: ecommerce_shop
-    ports:
-      - "5432:5432"
-    volumes:
+    ports: # This maps a port on your computer (the host) to a port inside the container.
+      - "54329:54329"
+    volumes: # Volumes are how Docker persists data. By default, if you delete a container, all its data is lost. This line tells Docker to save the database's internal data folder (/var/lib/postgresql/data) into a permanent, named storage area on your computer called postgres_data. If you restart or delete the container, your database tables and data will still be there when it comes back up.
       - postgres_data:/var/lib/postgresql/data
   
   localstack: 
     image: localstack/localstack:latest
+    # image: localstack/localstack:4.4.0
     container_name: localstack_container
     environment:
+      - LOCALSTACK_AUTH_TOKEN=ls-YaCeREVu-sOPe-3952-6909-NeZexuhUbc2c
       - SERVICES=s3,sqs
       - DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - DATA_DIR=/tmp/localstack/data
-    ports:
+    ports: # This maps port 4566 inside the container to port 4566 on your computer.
       - "4566:4566" # LocalStack Gateway
-    volumes:
+    volumes: # Similar to Postgres, this ensures that any S3 buckets or SQS queues you create are saved into a permanent storage area called localstack_data, so they survive container restarts.
       - localstack_data:/var/lib/localstack
+      - ./init/aws/init-localstack.sh:/etc/localstack/init/ready.d/init.sh
 
-volumes:
+volumes: # This is the bottom of the file. It simply declares the named volumes used above. By declaring them here, Docker knows to create these permanent storage areas on your computer's disk. (You can see them in the Docker Desktop "Volumes" tab).
   postgres_data:
   localstack_data:

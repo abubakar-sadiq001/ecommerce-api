@@ -185,6 +185,6 @@ func (s *Server) uploadProductImage(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, "Image uploaded successfully", nil)
+	utils.SuccessResponse(c, "Image uploaded successfully", url)
 
 }

@@ -56,8 +56,9 @@ func main() {
 		uploadProvider = provider.NewLocalUploadProvider(cfg.Upload.Path)
 	}
 	uploadService := services.NewUploadService(uploadProvider)
+	cartService := services.NewCartService(db)
 
-	srv := server.New(cfg, db, &log, authService, productService, userService, uploadService)
+	srv := server.New(cfg, db, &log, authService, productService, userService, uploadService, cartService)
 
 	// initialize parameters for running an HTTP server
 	httpServer := &http.Server{

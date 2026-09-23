@@ -30,7 +30,7 @@ func (s *CartService) GetCart(userID uint) (*dto.CartResponse, error) {
 func (s *CartService) AddCart(userID uint, req *dto.AddToCartRequest) (*dto.CartResponse, error) {
 	// check if products exists
 	var product models.Product
-	if err := s.db.First(&product, product.ID).Error; err != nil {
+	if err := s.db.First(&product, req.ProductID).Error; err != nil {
 		return nil, err
 	}
 
@@ -96,7 +96,10 @@ func (s *CartService) UpdateCartItem(userID, itemID uint, req *dto.UpdateCartIte
 }
 
 func (s *CartService) RemoveFromCart(userID, itemID uint) error {
-	return s.db.Joins("JOIN carts ON cart_items.cart_id = carts.id").Where("cart_items.id = ? AND carts.user_id = ?", itemID, userID).Delete(models.CartItem{}).Error
+	return s.db.Where("id = ? AND cart_id IN (?)", itemID,
+		s.db.Select("id").Table("carts").
+			Where("user_id = ?", userID)).
+		Delete(&models.CartItem{}).Error
 }
 
 func (s *CartService) convertToCartResponse(cart *models.Cart) *dto.CartResponse {

@@ -43,9 +43,6 @@ func (s *Server) SetupRoutes() *gin.Engine {
 	router := gin.New()
 
 	// middlewares
-	// router.Use(gin.Logger())
-	// router.Use(gin.Recovery())
-	// router.Use(s.corsMiddleware())
 	router.Use(gin.Logger(), gin.Recovery(), s.corsMiddleware())
 
 	// routes

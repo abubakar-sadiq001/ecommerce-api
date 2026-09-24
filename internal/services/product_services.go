@@ -100,7 +100,7 @@ func (s *ProductService) CreateProduct(req *dto.CreateProductRequest) (*dto.Prod
 	return s.GetProduct(product.ID)
 }
 
-func (s *ProductService) GetProducts(page, pageLimit int) ([]dto.ProductResponse, *utils.PaginatedMeta, error) {
+func (s *ProductService) GetProducts(page, pageLimit int) ([]dto.ProductResponse, *utils.PaginationMeta, error) {
 	if page < 1 {
 		page = 1
 	}
@@ -127,7 +127,7 @@ func (s *ProductService) GetProducts(page, pageLimit int) ([]dto.ProductResponse
 	}
 
 	totalPages := int((total + int64(pageLimit) - 1) / int64(pageLimit))
-	meta := &utils.PaginatedMeta{
+	meta := &utils.PaginationMeta{
 		Page:       page,
 		Limit:      pageLimit,
 		Total:      total,

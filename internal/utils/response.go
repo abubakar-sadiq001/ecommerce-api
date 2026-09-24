@@ -15,10 +15,10 @@ type Response struct {
 
 type PaginatedResponse struct {
 	Response
-	Meta PaginatedMeta `json:"meta"`
+	Meta PaginationMeta `json:"meta"`
 }
 
-type PaginatedMeta struct {
+type PaginationMeta struct {
 	Page       int   `json:"page"`
 	Limit      int   `json:"limit"`
 	Total      int64 `json:"total"`
@@ -78,7 +78,7 @@ func InternalServerErrorResponse(c *gin.Context, message string, err error) {
 	ErrorResponse(c, http.StatusInternalServerError, message, err)
 }
 
-func PaginatedSuccessResponse(c *gin.Context, message string, data interface{}, meta PaginatedMeta) {
+func PaginatedSuccessResponse(c *gin.Context, message string, data interface{}, meta PaginationMeta) {
 	c.JSON(http.StatusOK, PaginatedResponse{
 		Response: Response{
 			Success: true,

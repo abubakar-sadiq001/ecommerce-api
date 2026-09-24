@@ -8,7 +8,7 @@ import (
 
 type Order struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`
-	UserID      string         `json:"user_id" gorm:"not null"`
+	UserID      uint           `json:"user_id" gorm:"not null"`
 	Status      OrderStatus    `json:"status" gorm:"default:pending"`
 	TotalAmount float64        `json:"total_amount" gorm:"not null"`
 	CreatedAt   time.Time      `json:"created_at"`

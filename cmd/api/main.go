@@ -57,8 +57,9 @@ func main() {
 	}
 	uploadService := services.NewUploadService(uploadProvider)
 	cartService := services.NewCartService(db)
+	orderService := services.NewOrderService(db)
 
-	srv := server.New(cfg, db, &log, authService, productService, userService, uploadService, cartService)
+	srv := server.New(cfg, db, &log, authService, productService, userService, uploadService, cartService, orderService)
 
 	// initialize parameters for running an HTTP server
 	httpServer := &http.Server{

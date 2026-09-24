@@ -70,7 +70,7 @@ func (s *Server) createCategory(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, "Category created successfuly", response)
+	utils.CreatedResponse(c, "Category created successfuly", response)
 
 }
 
@@ -87,7 +87,7 @@ func (s *Server) createProduct(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, "Product has been created successfully", response)
+	utils.CreatedResponse(c, "Product has been created successfully", response)
 }
 
 func (s *Server) getProducts(c *gin.Context) {

@@ -57,7 +57,13 @@ func (s *CartService) AddCart(userID uint, req *dto.AddToCartRequest) (*dto.Cart
 			ProductID: req.ProductID,
 			Quantity:  req.Quantity,
 		}
-		s.db.Create(&cartItem)
+		if err := s.db.Create(&cartItem).Error; err != nil {
+			return nil, err
+		}
+		if err := s.db.Save(&cartItem).Error; err != nil {
+			return nil, err
+		}
+
 	} else {
 		// Update existing cart item
 		cartItem.Quantity += req.Quantity

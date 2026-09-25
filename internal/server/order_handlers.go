@@ -22,14 +22,10 @@ func (s *Server) CreateOrder(c *gin.Context) {
 func (s *Server) getOrders(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
-	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 32)
-	pageLimit, err := strconv.ParseInt(c.DefaultQuery("limit", "10"), 10, 32)
-	if err != nil {
-		utils.BadRequestResponse(c, "Invalid request data", err)
-		return
-	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageLimit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	orders, meta, err := s.orderService.GetOrders(userID, int(page), int(pageLimit))
+	orders, meta, err := s.orderService.GetOrders(userID, page, pageLimit)
 	if err != nil {
 		utils.InternalServerErrorResponse(c, "Failed to retrieve orders", err)
 		return

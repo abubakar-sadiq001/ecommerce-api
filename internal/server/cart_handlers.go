@@ -17,7 +17,7 @@ func (s *Server) getCart(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, "Cart retrieved sucessfully", cart)
+	utils.SuccessResponse(c, "Cart retrieved successfully", cart)
 }
 
 func (s *Server) addToCart(c *gin.Context) {
@@ -58,7 +58,7 @@ func (s *Server) updateCartItem(c *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(c, "Cart item updated succesfully", cart)
+	utils.SuccessResponse(c, "Cart item updated successfully", cart)
 }
 
 func (s *Server) removeFromCart(c *gin.Context) {

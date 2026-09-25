@@ -62,6 +62,18 @@ func (s *OrderService) CreateOrder(userID uint) (*dto.OrderResponse, error) {
 				return err
 			}
 
+			/*
+				Save on a struct with a primary key does an UPDATE of all fields, not just the stock. It also fires hooks, and it can overwrite columns that were changed concurrently between your read and your write. For a stock decrement, prefer an atomic update:
+				if err := tx.Model(&models.Product{}).
+					Where("id = ? AND stock >= ?", cartItem.ProductID, cartItem.Quantity).
+					UpdateColumn("stock", gorm.Expr("stock - ?", cartItem.Quantity)).Error; err != nil {
+					return err
+				}
+				if tx.RowsAffected == 0 {
+					return fmt.Errorf("insufficient stock for product: %s", cartItem.Product.Name)
+				}
+			*/
+
 		}
 
 		// Create order
@@ -77,7 +89,7 @@ func (s *OrderService) CreateOrder(userID uint) (*dto.OrderResponse, error) {
 		}
 
 		// Clear cart
-		if err := tx.Where("cart_id = ?", cart.ID).Delete(models.CartItem{}).Error; err != nil {
+		if err := tx.Unscoped().Where("cart_id = ?", cart.ID).Delete(&models.CartItem{}).Error; err != nil {
 			return err
 		}
 
@@ -155,7 +167,7 @@ func (s *OrderService) GetOrder(userID, orderID uint) (*dto.OrderResponse, error
 
 func (s *OrderService) getOrderResponse(tx *gorm.DB, orderID uint) (*dto.OrderResponse, error) {
 	var order models.Order
-	if err := s.db.Preload("OrderItems.Product.Category").First(&order, orderID).Error; err != nil {
+	if err := tx.Preload("OrderItems.Product.Category").First(&order, orderID).Error; err != nil {
 		return nil, err
 	}
 
@@ -169,7 +181,7 @@ func (s *OrderService) convertToOrderResponse(order *models.Order) dto.OrderResp
 	for i := range order.OrderItems {
 		item := order.OrderItems[i]
 
-		orderItems = append(orderItems, dto.OrderItemResponse{
+		orderItems[i] = dto.OrderItemResponse{
 			ID: item.ID,
 			Product: dto.ProductResponse{
 				ID:          item.ID,
@@ -189,7 +201,7 @@ func (s *OrderService) convertToOrderResponse(order *models.Order) dto.OrderResp
 			},
 			Quantity: item.Quantity,
 			Price:    item.Price,
-		})
+		}
 
 	}
 

@@ -108,7 +108,7 @@ func (s *Server) SetupRoutes() *gin.Engine {
 			}
 
 			// order routes
-			order := protected.Group("/order")
+			order := protected.Group("/orders")
 			{
 				orderRoutes := order
 				orderRoutes.POST("/", s.CreateOrder)

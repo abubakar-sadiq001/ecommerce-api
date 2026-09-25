@@ -70,7 +70,7 @@ func (s *Server) createCategory(c *gin.Context) {
 		return
 	}
 
-	utils.CreatedResponse(c, "Category created successfuly", response)
+	utils.CreatedResponse(c, "Category created successfully", response)
 
 }
 
@@ -169,9 +169,6 @@ func (s *Server) uploadProductImage(c *gin.Context) {
 		utils.BadRequestResponse(c, "No file is uploaded", err)
 		return
 	}
-
-	// uploadProvider := provider.NewLocalUploadProvider(s.config.Upload.Path)
-	// uploadService := services.NewUploadService(uploadProvider)
 
 	url, err := s.uploadService.UploadImage(uint(id), file)
 	if err != nil {

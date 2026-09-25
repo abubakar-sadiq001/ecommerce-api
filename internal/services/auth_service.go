@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/abubakar-sadiq001/learning-go-shop/internal/config"
+	appconfig "github.com/abubakar-sadiq001/learning-go-shop/internal/config"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/models"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/utils"
@@ -14,10 +14,10 @@ import (
 
 type AuthService struct {
 	db     *gorm.DB
-	config *config.Config
+	config *appconfig.Config
 }
 
-func NewAuthService(db *gorm.DB, config *config.Config) *AuthService {
+func NewAuthService(db *gorm.DB, config *appconfig.Config) *AuthService {
 	return &AuthService{
 		db:     db,
 		config: config,

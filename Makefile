@@ -1,7 +1,7 @@
 .PHONY: help build run dev lint format \
         new-migration migrate-up migrate-down migrate-status migrate-reset \
         migrate-create migrate-version \
-        docker-up docker-down test
+        docker-up docker-down test docs-generate
 
 help:
 	@echo "Makefile commands:"
@@ -38,6 +38,10 @@ lint:
 format:
 	gofmt -s -w .
 	goimports -w .
+
+docs-generate:
+# 	mkdir -p docs
+	swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal --exclude .git,docs,docker,db
 
 # ---------- Goose migrations ----------
 new-migration:

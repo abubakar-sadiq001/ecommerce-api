@@ -31,7 +31,7 @@ func NewEmailNotifier(config *SMTPConfig) *EmailNotifier {
 }
 
 func (e *EmailNotifier) SendSimpleEmail(email *SimpleEmail) error {
-	addr := fmt.Sprintf("%s:%d", e.config.Host, e.config.Port)
+	addr := net.JoinHostPort(e.config.Host, fmt.Sprintf("%d", e.config.Port))
 
 	// Connect explicitly without TLS. only for dev
 	conn, err := net.Dial("tcp", addr)

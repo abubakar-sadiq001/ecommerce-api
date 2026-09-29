@@ -24,7 +24,17 @@ MIGRATION_DIR := db/migrations
 GOOSE         := goose -env=none -dir $(MIGRATION_DIR) postgres "$(DB_URL)"
 
 build:
-	go build -o bin/api cmd/api/main.go
+# 	go build -o bin/api cmd/api/main.go
+# 	go build -o bin/notifier cmd/notifier/main.go
+	#echo "Building all binaries...."
+	#mkdir -p bin
+	@for cmd in cmd/*/; do \
+			if [ -d "$$cmd" ]; then \
+			 	binary=$$(basename $$cmd); \
+			 	echo "Building $$binary..."; \
+			 	go build -o bin/$$binary ./$$cmd; \
+			fi \
+		done
 
 run:
 	go run cmd/api/main.go

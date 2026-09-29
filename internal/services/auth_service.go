@@ -7,20 +7,23 @@ import (
 
 	appconfig "github.com/abubakar-sadiq001/learning-go-shop/internal/config"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/events"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/models"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/utils"
 	"gorm.io/gorm"
 )
 
 type AuthService struct {
-	db     *gorm.DB
-	config *appconfig.Config
+	db             *gorm.DB
+	config         *appconfig.Config
+	eventPublisher events.Publisher
 }
 
-func NewAuthService(db *gorm.DB, config *appconfig.Config) *AuthService {
+func NewAuthService(db *gorm.DB, config *appconfig.Config, eventPublisher events.Publisher) *AuthService {
 	return &AuthService{
-		db:     db,
-		config: config,
+		db:             db,
+		config:         config,
+		eventPublisher: eventPublisher,
 	}
 }
 
@@ -60,15 +63,15 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 	return s.generateAuthResponse(&user)
 }
 
-func (s *AuthService) Login(dtoReq *dto.LoginRequest) (*dto.AuthResponse, error) {
+func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
 	// Find user
 	var user models.User
-	if err := s.db.Where("email = ? AND is_active = ?", dtoReq.Email, true).First(&user).Error; err != nil {
+	if err := s.db.Where("email = ? AND is_active = ?", req.Email, true).First(&user).Error; err != nil {
 		return nil, errors.New("invalid credentials")
 	}
 
 	// Verify password
-	if !utils.CheckPasswordHash(dtoReq.Password, user.Password) {
+	if !utils.CheckPasswordHash(req.Password, user.Password) {
 		return nil, errors.New("invalid credentilas")
 	}
 
@@ -76,16 +79,16 @@ func (s *AuthService) Login(dtoReq *dto.LoginRequest) (*dto.AuthResponse, error)
 	return s.generateAuthResponse(&user)
 }
 
-func (s *AuthService) RefreshToken(dtoReq *dto.RefreshTokenRequest) (*dto.AuthResponse, error) {
+func (s *AuthService) RefreshToken(req *dto.RefreshTokenRequest) (*dto.AuthResponse, error) {
 	// Validate refresh token
-	claims, err := utils.ValidateToken(dtoReq.RefreshToken, s.config.JWT.Secret)
+	claims, err := utils.ValidateToken(req.RefreshToken, s.config.JWT.Secret)
 	if err != nil {
 		return nil, errors.New("invalid refresh token")
 	}
 
 	// Retrieve and check if token exist or expired
 	var refreshToken models.RefreshToken
-	if err := s.db.Where("token = ? AND expires > ?", dtoReq.RefreshToken, time.Now()).First(&refreshToken).Error; err != nil {
+	if err := s.db.Where("token = ? AND expires_at > ?", req.RefreshToken, time.Now()).First(&refreshToken).Error; err != nil {
 		return nil, errors.New("refresh token not found or expired")
 	}
 
@@ -130,6 +133,15 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 	// Insert the new token
 	if err := s.db.Create(&refreshTokenModel).Error; err != nil {
 		return nil, err
+	}
+
+	// if err := s.db.Model(&models.RefreshToken{}).Where("user_id = ?", user.ID).Update("token", refreshToken).Error; err != nil {
+	// 	return nil, err
+	// }
+
+	err = s.eventPublisher.Publish("USER_LOGGED_IN", user, map[string]string{})
+	if err != nil {
+		return nil, fmt.Errorf("unable to publish user login event: %w", err)
 	}
 
 	// Return auth response

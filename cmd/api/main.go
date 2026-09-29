@@ -12,8 +12,9 @@ import (
 
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/config"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/database"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/events"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/interfaces"
-	"github.com/abubakar-sadiq001/learning-go-shop/internal/provider"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/providers"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/server"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/services"
 	"github.com/gin-gonic/gin"
@@ -62,19 +63,26 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to get database connection")
 		fmt.Println("mainDB Err")
 	}
-
 	defer mainDB.Close()
+
+	ctx := context.Background()
+
+	eventPublisher, err := events.NewEventPublisher(ctx, &cfg.AWS)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to create event publisher")
+		return
+	}
 	gin.SetMode(cfg.Server.GinMode)
 
-	authService := services.NewAuthService(db, cfg)
+	authService := services.NewAuthService(db, cfg, eventPublisher)
 	productService := services.NewProductService(db)
 	userService := services.NewUserService(db)
 
 	var uploadProvider interfaces.UploadProvider
 	if cfg.Upload.UploadProvider == "s3" {
-		uploadProvider = provider.NewS3Provider(cfg)
+		uploadProvider = providers.NewS3Provider(cfg)
 	} else {
-		uploadProvider = provider.NewLocalUploadProvider(cfg.Upload.Path)
+		uploadProvider = providers.NewLocalUploadProvider(cfg.Upload.Path)
 	}
 	uploadService := services.NewUploadService(uploadProvider)
 	cartService := services.NewCartService(db)

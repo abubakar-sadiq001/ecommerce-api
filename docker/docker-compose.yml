@@ -24,6 +24,21 @@ services:
       - ../uploads:/var/www/uploads
     depends_on:
       - localstack
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    restart: unless-stopped
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
   
   localstack: 
     image: localstack/localstack:latest
@@ -45,3 +60,4 @@ services:
 volumes: # This is the bottom of the file. It simply declares the named volumes used above. By declaring them here, Docker knows to create these permanent storage areas on your computer's disk. (You can see them in the Docker Desktop "Volumes" tab).
   postgres_data:
   localstack_data:
+  mailpit_data:

@@ -7,6 +7,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy source code
+# Copies everything from the local build context (.) into the container's WORKDIR (.)
 COPY . .
 
 # Build all binaries

@@ -281,7 +281,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Add item to cart"
+                    "Cart"
                 ],
                 "summary": "Add a product to the user's shopping cart",
                 "parameters": [

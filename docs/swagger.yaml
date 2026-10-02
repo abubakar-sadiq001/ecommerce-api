@@ -494,7 +494,7 @@ paths:
       - BearerAuth: []
       summary: Add a product to the user's shopping cart
       tags:
-      - Add item to cart
+      - Cart
   /cart/items/{id}:
     delete:
       description: Remove an item from the user's shopping cart

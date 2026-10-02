@@ -5,6 +5,7 @@ CREATE TABLE products (
     category_id INTEGER NOT NULL REFERENCES categories (id) ON DELETE CASCADE,
     description TEXT,
     price DECIMAL DEFAULT 0,
+    stock INTEGER NOT NULL,
     sku VARCHAR(100) UNIQUE NOT NULL,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,

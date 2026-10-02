@@ -17,7 +17,7 @@ import (
 // @Router /auth/register [post]
 func (s *Server) register(c *gin.Context) {
 	var req dto.RegisterRequest
-	if err := c.ShouldBindJSON(req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.BadRequestResponse(c, "Invalid request data", err)
 		return
 	}

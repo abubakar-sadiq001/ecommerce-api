@@ -7,13 +7,19 @@ services:
     image: postgres:12-alpine #  Tells Docker to download and use the official PostgreSQL version 12 image from docker hub
     container_name: postgres_container # Gives the actual running container a specific, easy-to-remember name on your system.
     environment: # Environment Variables. When the Postgres image starts for the first time, it reads these to set up the database automatically. It creates a superuser called postgres, sets the password, and creates an empty database called ecommerce_shop.
-      POSTGRES_USER: postgres 
-      POSTGRES_PASSWORD: "#Scripter123"
+      POSTGRES_USER: abubakar-sadiq
+      POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: ecommerce_shop
     ports: # This maps a port on your computer (the host) to a port inside the container.
-      - "54329:54329"
+      - "5433:5432"
     volumes: # Volumes are how Docker persists data. By default, if you delete a container, all its data is lost. This line tells Docker to save the database's internal data folder (/var/lib/postgresql/data) into a permanent, named storage area on your computer called postgres_data. If you restart or delete the container, your database tables and data will still be there when it comes back up.
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U abubakar-sadiq -d ecommerce_shop"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   cdn:
     image: nginx:alpine
@@ -56,6 +62,64 @@ services:
     volumes: # Similar to Postgres, this ensures that any S3 buckets or SQS queues you create are saved into a permanent storage area called localstack_data, so they survive container restarts.
       - localstack_data:/var/lib/localstack
       - ./init/aws/init-localstack.sh:/etc/localstack/init/ready.d/init.sh
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+          condition: service_healthy
+      localstack: 
+          condition: service_healthy
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=abubakar-sadiq
+      - DB_PASSWORD=mypassword
+      - DB_NAME=ecommerce_shop
+      - AWS_S3_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - SMTP_HOST=mailpit
+      - SMTP_PORT=1025
+      - SMTP_FROM=noreply@shop.com
+    command: [ "./api" ]
+
+  notifier:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - postgres
+      - localstack
+      - mailpit
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=abubakar-sadiq
+      - DB_PASSWORD=mypassword
+      - DB_NAME=ecommerce_shop
+      - AWS_S3_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - SMTP_HOST=mailpit
+      - SMTP_PORT=1025
+      - SMTP_FROM=noreply@shop.com
+    command: [ "./notifier" ]
+    deploy:
+      replicas: 1
+
+  goose:
+    image: kukymbr/goose-docker:latest
+    volumes:
+      - ../db/migrations:/migrations
+    environment:
+      - GOOSE_DRIVER=postgres
+      - GOOSE_DBSTRING=host=postgres port=5432 user=abubakar-sadiq password=mypassword dbname=ecommerce_shop sslmode=disable
+      - GOOSE_MIGRATION_DIR=/migrations
+    depends_on:
+      - postgres      
 
 volumes: # This is the bottom of the file. It simply declares the named volumes used above. By declaring them here, Docker knows to create these permanent storage areas on your computer's disk. (You can see them in the Docker Desktop "Volumes" tab).
   postgres_data:

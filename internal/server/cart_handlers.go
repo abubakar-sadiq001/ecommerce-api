@@ -29,7 +29,7 @@ func (s *Server) getCart(c *gin.Context) {
 	utils.SuccessResponse(c, "Cart retrieved successfully", cart)
 }
 
-// @Tags Add item to cart
+// @Tags Cart
 // @Summary Add a product to the user's shopping cart
 // @Router /cart/items [post]
 // @Description Retrieve current user's shopping cart with all items
@@ -49,7 +49,7 @@ func (s *Server) addToCart(c *gin.Context) {
 
 	cartResponse, err := s.cartService.AddCart(userID, &req)
 	if err != nil {
-		utils.BadRequestResponse(c, "Failed to add item to cart", err)
+		utils.InternalServerErrorResponse(c, "Failed to add item to cart", err)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (s *Server) updateCartItem(c *gin.Context) {
 
 	cart, err := s.cartService.UpdateCartItem(userID, uint(id), &req)
 	if err != nil {
-		utils.BadRequestResponse(c, "Failed to update cart item", err)
+		utils.InternalServerErrorResponse(c, "Failed to update cart item", err)
 		return
 	}
 
@@ -112,7 +112,7 @@ func (s *Server) removeFromCart(c *gin.Context) {
 
 	err = s.cartService.RemoveFromCart(userID, uint(id))
 	if err != nil {
-		utils.BadRequestResponse(c, "Failed to remove item", err)
+		utils.InternalServerErrorResponse(c, "Failed to remove item", err)
 		return
 	}
 

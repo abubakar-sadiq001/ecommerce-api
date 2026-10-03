@@ -9,6 +9,7 @@ import (
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/events"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/models"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/notifications"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/utils"
 	"gorm.io/gorm"
 )
@@ -28,7 +29,7 @@ func NewAuthService(db *gorm.DB, config *appconfig.Config, eventPublisher events
 }
 
 func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, error) {
-	// Check if user exists
+	// 1. Check if user exists
 	var existingUser models.User
 	if err := s.db.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
 		return nil, errors.New("you cannot register with this email")
@@ -37,13 +38,13 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 	// 	return nil, errors.New("you cannot register with this email")
 	// }
 
-	// Hash password
+	// 2. Hash password
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create user
+	// 3. Create user
 	user := models.User{
 		Email:     req.Email,
 		Password:  hashedPassword,
@@ -56,55 +57,55 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 		return nil, err
 	}
 
-	// Create a cart
+	// 4. Create a cart
 	cart := models.Cart{UserID: user.ID}
 	if err := s.db.Create(&cart).Error; err != nil {
 		fmt.Println("Unable to create cart")
 	}
 
-	// Generate token
+	// 5. Return generated token
 	return s.generateAuthResponse(&user)
 }
 
 func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
-	// Find user
+	// 1. Find user
 	var user models.User
 	if err := s.db.Where("email = ? AND is_active = ?", req.Email, true).First(&user).Error; err != nil {
 		return nil, errors.New("invalid credentials")
 	}
 
-	// Verify password
+	// 2. Verify password
 	if !utils.CheckPasswordHash(req.Password, user.Password) {
 		return nil, errors.New("invalid credentilas")
 	}
 
-	// Generate token
+	// 3. Return generated token
 	return s.generateAuthResponse(&user)
 }
 
 func (s *AuthService) RefreshToken(req *dto.RefreshTokenRequest) (*dto.AuthResponse, error) {
-	// Validate refresh token
+	// 1. Validate refresh token
 	claims, err := utils.ValidateToken(req.RefreshToken, s.config.JWT.Secret)
 	if err != nil {
 		return nil, errors.New("invalid refresh token")
 	}
 
-	// Retrieve and check if token exist or expired
+	// 2. Retrieve and check if token exist or expired
 	var refreshToken models.RefreshToken
 	if err := s.db.Where("token = ? AND expires_at > ?", req.RefreshToken, time.Now()).First(&refreshToken).Error; err != nil {
 		return nil, errors.New("refresh token not found or expired")
 	}
 
-	// Retrieve user
+	// 3. Retrieve user
 	var user models.User
 	if err := s.db.First(&user, claims.UserID).Error; err != nil {
 		return nil, errors.New("user not found")
 	}
 
-	// Delete token if user is not found
+	// 4. Delete token if user is not found
 	s.db.Delete(&refreshToken)
 
-	// Generate token
+	// 5. Return generated token
 	return s.generateAuthResponse(&user)
 }
 
@@ -113,7 +114,7 @@ func (s *AuthService) Logout(refreshToken string) error {
 }
 
 func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse, error) {
-	// Generate token pairs
+	// 1. Generate token pairs
 	accessToken, refreshToken, err := utils.GenerateTokenPair(
 		&s.config.JWT,
 		user.ID,
@@ -130,10 +131,10 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 		ExpiresAt: time.Now().Add(s.config.JWT.RefreshTokenExpiresIn),
 	}
 
-	// Delete expired tokens or ALL previous tokens for this user first
+	// 2. Delete expired tokens or ALL previous tokens for this user first
 	s.db.Where("user_id = ?", user.ID).Delete(&models.RefreshToken{})
 
-	// Insert the new token
+	// 3. Insert the new token
 	if err := s.db.Create(&refreshTokenModel).Error; err != nil {
 		return nil, err
 	}
@@ -142,12 +143,13 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 	// 	return nil, err
 	// }
 
-	err = s.eventPublisher.Publish("USER_LOGGED_IN", user, map[string]string{})
+	// 4. Publish login in event
+	err = s.eventPublisher.Publish(notifications.UserLoggedIn, user, map[string]string{})
 	if err != nil {
 		return nil, fmt.Errorf("unable to publish user login event: %w", err)
 	}
 
-	// Return auth response
+	// 5. Return auth response
 	return &dto.AuthResponse{
 		User: dto.UserResponse{
 			ID:        user.ID,

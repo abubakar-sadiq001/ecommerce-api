@@ -81,6 +81,3 @@ docker-down:
 test:
 	@echo "Running tests with ARGS=$(ARGS)"
 	go test ./... $(ARGS)
-
-graph-generate:
-	

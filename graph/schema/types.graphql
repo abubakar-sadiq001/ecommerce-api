@@ -1,101 +1,114 @@
 scalar Time
 
 type User {
-    id: ID!
-    email: String!
-    first_name: String!
-    last_name: String!
-    phone: String!
-    role: String!
-    is_active: String!
+  id: ID!
+  email: String!
+  first_name: String!
+  last_name: String!
+  phone: String!
+  role: String!
+  is_active: Boolean!
+
+  created_at: Time!
+  updated_at: Time!
 }
 
 type AuthPayload {
-    id: ID!
-    access_token: String!
-    refresh_token: String!
-    refresh_token: String!
+  user: User!
+  access_token: String!
+  refresh_token: String!
 }
 
 type Category {
-    id: ID!
-    name: String!
-    description: String!
-    is_active: Boolean
+  id: ID!
+  name: String!
+  description: String!
+  is_active: Boolean!
+
+  created_at: Time!
+  updated_at: Time!
 }
 
 type ProductImage {
-    id: ID!
-    url: String!
-    alt_text: String!
-    is_primary
+  id: ID!
+  url: String!
+  alt_text: String!
+  is_primary: Boolean!
+  created_at: Time!
 }
 
 type Product {
-    id: ID!
-    category_id: ID!
-    name: String!
-    description: String!
-    price: Float!
-    stock: Int!
-    sku: String!
-    is_active: Category!
-    ipmages: [ProductImage]!
+  id: ID!
+  category_id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  sku: String!
+  is_active: Boolean!
+  category: Category!
+  images: [ProductImage!]!
+  created_at: Time!
+  updated_at: Time!
 }
 
-
 type CartItem {
-   id: ID!
-   product: Product!
-   quantity: Int!
-   subtotal: Float! 
+  id: ID!
+  product: Product!
+  quantity: Int!
+  subtotal: Float!
+  created_at: Time!
+  updated_at: Time!
 }
 
 type Cart {
-   id: ID!
-   user_id: ID!
-   cart_items: [CartItem!]!
-   total: Float! 
+  id: ID!
+  user_id: ID!
+  cart_items: [CartItem!]!
+  total: Float!
+  created_at: Time!
+  updated_at: Time!
 }
 
 type OrderItem {
-    id: ID!
-    product: Product!
-    quantity: Int!
-    price: Float!
+  id: ID!
+  product: Product!
+  quantity: Int!
+  price: Float!
+  created_at: Time!
 }
 
 type Order {
-    id: ID!
-    user_id: Product!
-    status: String!
-    total_amount: String!
-    order_item: [OrderItem]!
-    quantity: Int!
-    price: Float!
+  id: ID!
+  user_id: ID!
+  status: String!
+  total_amount: Float!
+  order_items: [OrderItem!]!
+  created_at: Time!
+  updated_at: Time!
 }
 
 type ProductConnection {
-    edges:[Product]!
-    pageinfo: PageInfo!
+  edges: [ProductEdge!]!
+  pageInfo: PageInfo!
 }
 
 type ProductEdge {
-    edges: product!
+  node: Product!
 }
 
 type OrderConnection {
-    edges: [OrderEdge]!
-    pageinfo: PageInfo!
+  edges: [OrderEdge!]!
+  pageInfo: PageInfo!
 }
 
 type OrderEdge {
-    edges: Order!
+  node: Order!
 }
 
 type PageInfo {
-    page: Int!
-    limit: Int!
-    total: Int!
-    total_pages: Int!
+  page: Int!
+  limit: Int!
+  total: Int!
+  total_pages: Int!
 }

@@ -41,6 +41,15 @@ input CreateProductInput {
   is_active: Boolean
 }
 
+input UpdateProductInput {
+  category_id: UInt!
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  is_active: Boolean
+}
+
 input AddToCartInput {
   product_id: UInt
   quantity: Int!

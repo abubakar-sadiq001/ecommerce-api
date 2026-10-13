@@ -16,7 +16,7 @@ type Mutation {
   register(input: RegisterInput!): AuthPayload!
   login(input: LoginInput!): AuthPayload!
   refreshToken(input: RefreshTokenInput!): AuthPayload!
-  logout: Boolean!
+  logout(input: RefreshTokenInput!): Boolean!
 
   updateProfile(input: UpdateProfileInput!): User!
 

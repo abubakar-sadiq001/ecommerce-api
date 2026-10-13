@@ -11,10 +11,6 @@ input LoginInput {
   password: String!
 }
 
-input Logout {
-  refresh_token: String!
-}
-
 input RefreshTokenInput {
   refresh_token: String!
 }

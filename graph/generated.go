@@ -89,7 +89,7 @@ type ComplexityRoot struct {
 		DeleteCategory func(childComplexity int, id string) int
 		DeleteProduct  func(childComplexity int, id string) int
 		Login          func(childComplexity int, input dto.LoginRequest) int
-		Logout         func(childComplexity int) int
+		Logout         func(childComplexity int, input dto.RefreshTokenRequest) int
 		RefreshToken   func(childComplexity int, input dto.RefreshTokenRequest) int
 		Register       func(childComplexity int, input dto.RegisterRequest) int
 		RemoveFromCart func(childComplexity int, id string) int
@@ -213,7 +213,7 @@ type MutationResolver interface {
 	Register(ctx context.Context, input dto.RegisterRequest) (*dto.AuthResponse, error)
 	Login(ctx context.Context, input dto.LoginRequest) (*dto.AuthResponse, error)
 	RefreshToken(ctx context.Context, input dto.RefreshTokenRequest) (*dto.AuthResponse, error)
-	Logout(ctx context.Context) (bool, error)
+	Logout(ctx context.Context, input dto.RefreshTokenRequest) (bool, error)
 	UpdateProfile(ctx context.Context, input dto.UpdateProfileRequest) (*dto.UserResponse, error)
 	CreateCategory(ctx context.Context, input dto.CreateCategoryRequest) (*dto.CategoryResponse, error)
 	UpdateCategory(ctx context.Context, id string, input dto.UpdateCategoryRequest) (*dto.CategoryResponse, error)
@@ -494,7 +494,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.ComplexityRoot.Mutation.Logout(childComplexity), true
+		args, err := ec.field_Mutation_logout_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.Logout(childComplexity, args["input"].(dto.RefreshTokenRequest)), true
 	case "Mutation.refreshToken":
 		if e.ComplexityRoot.Mutation.RefreshToken == nil {
 			break
@@ -1472,6 +1477,20 @@ func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawAr
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_logout_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
+		func(ctx context.Context, v any) (dto.RefreshTokenRequest, error) {
+			return ec.unmarshalNRefreshTokenInput2githubᚗcomᚋabubakarᚑsadiq001ᚋlearningᚑgoᚑshopᚋinternalᚋdtoᚐRefreshTokenRequest(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_refreshToken_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -2391,7 +2410,8 @@ func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.
 			return ec.fieldContext_Mutation_logout(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Mutation().Logout(ctx)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().Logout(ctx, fc.Args["input"].(dto.RefreshTokenRequest))
 		},
 		nil,
 		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
@@ -2401,8 +2421,28 @@ func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.
 		true,
 	)
 }
-func (ec *executionContext) fieldContext_Mutation_logout(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Mutation", field, true, true, errors.New("field of type Boolean does not have child fields"))
+func (ec *executionContext) fieldContext_Mutation_logout(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_logout_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
 }
 
 func (ec *executionContext) _Mutation_updateProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {

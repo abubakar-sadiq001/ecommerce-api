@@ -34,16 +34,6 @@ func (r *cartItemResolver) Subtotal(ctx context.Context, obj *dto.CartItemRespon
 	panic(fmt.Errorf("not implemented: Subtotal - subtotal"))
 }
 
-// CreatedAt is the resolver for the created_at field.
-func (r *cartItemResolver) CreatedAt(ctx context.Context, obj *dto.CartItemResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
-}
-
-// UpdatedAt is the resolver for the updated_at field.
-func (r *cartItemResolver) UpdatedAt(ctx context.Context, obj *dto.CartItemResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updated_at"))
-}
-
 // ID is the resolver for the id field.
 func (r *categoryResolver) ID(ctx context.Context, obj *dto.CategoryResponse) (string, error) {
 	return fmt.Sprintf("%d", obj.ID), nil
@@ -69,11 +59,6 @@ func (r *orderResolver) UserID(ctx context.Context, obj *dto.OrderResponse) (str
 	return fmt.Sprintf("%d", obj.UserID), nil
 }
 
-// CreatedAt is the resolver for the created_at field.
-func (r *orderResolver) CreatedAt(ctx context.Context, obj *dto.OrderResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
-}
-
 // ID is the resolver for the id field.
 func (r *orderItemResolver) ID(ctx context.Context, obj *dto.OrderItemResponse) (string, error) {
 	return fmt.Sprintf("%d", obj.ID), nil
@@ -94,24 +79,9 @@ func (r *productResolver) CategoryID(ctx context.Context, obj *dto.ProductRespon
 	panic(fmt.Errorf("not implemented: CategoryID - category_id"))
 }
 
-// CreatedAt is the resolver for the created_at field.
-func (r *productResolver) CreatedAt(ctx context.Context, obj *dto.ProductResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
-}
-
-// UpdatedAt is the resolver for the updated_at field.
-func (r *productResolver) UpdatedAt(ctx context.Context, obj *dto.ProductResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updated_at"))
-}
-
 // ID is the resolver for the id field.
 func (r *productImageResolver) ID(ctx context.Context, obj *dto.ProductImageResponse) (string, error) {
 	return fmt.Sprintf("%d", obj.ID), nil
-}
-
-// CreatedAt is the resolver for the created_at field.
-func (r *productImageResolver) CreatedAt(ctx context.Context, obj *dto.ProductImageResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
 }
 
 // ID is the resolver for the id field.

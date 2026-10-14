@@ -200,8 +200,6 @@ type CartItemResolver interface {
 	ID(ctx context.Context, obj *dto.CartItemResponse) (string, error)
 
 	Subtotal(ctx context.Context, obj *dto.CartItemResponse) (float64, error)
-	CreatedAt(ctx context.Context, obj *dto.CartItemResponse) (*time.Time, error)
-	UpdatedAt(ctx context.Context, obj *dto.CartItemResponse) (*time.Time, error)
 }
 type CategoryResolver interface {
 	ID(ctx context.Context, obj *dto.CategoryResponse) (string, error)
@@ -229,8 +227,6 @@ type MutationResolver interface {
 type OrderResolver interface {
 	ID(ctx context.Context, obj *dto.OrderResponse) (string, error)
 	UserID(ctx context.Context, obj *dto.OrderResponse) (string, error)
-
-	CreatedAt(ctx context.Context, obj *dto.OrderResponse) (*time.Time, error)
 }
 type OrderItemResolver interface {
 	ID(ctx context.Context, obj *dto.OrderItemResponse) (string, error)
@@ -240,14 +236,9 @@ type OrderItemResolver interface {
 type ProductResolver interface {
 	ID(ctx context.Context, obj *dto.ProductResponse) (string, error)
 	CategoryID(ctx context.Context, obj *dto.ProductResponse) (string, error)
-
-	CreatedAt(ctx context.Context, obj *dto.ProductResponse) (*time.Time, error)
-	UpdatedAt(ctx context.Context, obj *dto.ProductResponse) (*time.Time, error)
 }
 type ProductImageResolver interface {
 	ID(ctx context.Context, obj *dto.ProductImageResponse) (string, error)
-
-	CreatedAt(ctx context.Context, obj *dto.ProductImageResponse) (*time.Time, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*dto.UserResponse, error)
@@ -2094,18 +2085,18 @@ func (ec *executionContext) _CartItem_created_at(ctx context.Context, field grap
 			return ec.fieldContext_CartItem_created_at(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.CartItem().CreatedAt(ctx, obj)
+			return obj.CreatedAt, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *time.Time) graphql.Marshaler {
-			return ec.marshalNTime2ᚖtimeᚐTime(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v time.Time) graphql.Marshaler {
+			return ec.marshalNTime2timeᚐTime(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
 func (ec *executionContext) fieldContext_CartItem_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("CartItem", field, true, true, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("CartItem", field, false, false, errors.New("field of type Time does not have child fields"))
 }
 
 func (ec *executionContext) _CartItem_updated_at(ctx context.Context, field graphql.CollectedField, obj *dto.CartItemResponse) (ret graphql.Marshaler) {
@@ -2117,18 +2108,18 @@ func (ec *executionContext) _CartItem_updated_at(ctx context.Context, field grap
 			return ec.fieldContext_CartItem_updated_at(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.CartItem().UpdatedAt(ctx, obj)
+			return obj.UpdatedAt, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *time.Time) graphql.Marshaler {
-			return ec.marshalNTime2ᚖtimeᚐTime(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v time.Time) graphql.Marshaler {
+			return ec.marshalNTime2timeᚐTime(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
 func (ec *executionContext) fieldContext_CartItem_updated_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("CartItem", field, true, true, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("CartItem", field, false, false, errors.New("field of type Time does not have child fields"))
 }
 
 func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *dto.CategoryResponse) (ret graphql.Marshaler) {
@@ -3050,18 +3041,18 @@ func (ec *executionContext) _Order_created_at(ctx context.Context, field graphql
 			return ec.fieldContext_Order_created_at(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Order().CreatedAt(ctx, obj)
+			return obj.CreatedAt, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *time.Time) graphql.Marshaler {
-			return ec.marshalNTime2ᚖtimeᚐTime(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v time.Time) graphql.Marshaler {
+			return ec.marshalNTime2timeᚐTime(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
 func (ec *executionContext) fieldContext_Order_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Order", field, true, true, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Order", field, false, false, errors.New("field of type Time does not have child fields"))
 }
 
 func (ec *executionContext) _Order_updated_at(ctx context.Context, field graphql.CollectedField, obj *dto.OrderResponse) (ret graphql.Marshaler) {
@@ -3656,18 +3647,18 @@ func (ec *executionContext) _Product_created_at(ctx context.Context, field graph
 			return ec.fieldContext_Product_created_at(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Product().CreatedAt(ctx, obj)
+			return obj.CreatedAt, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *time.Time) graphql.Marshaler {
-			return ec.marshalNTime2ᚖtimeᚐTime(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v time.Time) graphql.Marshaler {
+			return ec.marshalNTime2timeᚐTime(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
 func (ec *executionContext) fieldContext_Product_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Product", field, true, true, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type Time does not have child fields"))
 }
 
 func (ec *executionContext) _Product_updated_at(ctx context.Context, field graphql.CollectedField, obj *dto.ProductResponse) (ret graphql.Marshaler) {
@@ -3679,18 +3670,18 @@ func (ec *executionContext) _Product_updated_at(ctx context.Context, field graph
 			return ec.fieldContext_Product_updated_at(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Product().UpdatedAt(ctx, obj)
+			return obj.UpdatedAt, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *time.Time) graphql.Marshaler {
-			return ec.marshalNTime2ᚖtimeᚐTime(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v time.Time) graphql.Marshaler {
+			return ec.marshalNTime2timeᚐTime(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
 func (ec *executionContext) fieldContext_Product_updated_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Product", field, true, true, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type Time does not have child fields"))
 }
 
 func (ec *executionContext) _ProductConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.ProductConnection) (ret graphql.Marshaler) {
@@ -3890,18 +3881,18 @@ func (ec *executionContext) _ProductImage_created_at(ctx context.Context, field 
 			return ec.fieldContext_ProductImage_created_at(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.ProductImage().CreatedAt(ctx, obj)
+			return obj.CreatedAt, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *time.Time) graphql.Marshaler {
-			return ec.marshalNTime2ᚖtimeᚐTime(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v time.Time) graphql.Marshaler {
+			return ec.marshalNTime2timeᚐTime(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
 func (ec *executionContext) fieldContext_ProductImage_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("ProductImage", field, true, true, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("ProductImage", field, false, false, errors.New("field of type Time does not have child fields"))
 }
 
 func (ec *executionContext) _Query_me(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6251,81 +6242,15 @@ func (ec *executionContext) _CartItem(ctx context.Context, sel ast.SelectionSet,
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "created_at":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._CartItem_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._CartItem_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
-				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "updated_at":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._CartItem_updated_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._CartItem_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
-				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6759,43 +6684,10 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "created_at":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Order_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._Order_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
-				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "updated_at":
 			out.Values[i] = ec._Order_updated_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -7209,81 +7101,15 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "created_at":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Product_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._Product_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
-				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "updated_at":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Product_updated_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._Product_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
-				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7452,43 +7278,10 @@ func (ec *executionContext) _ProductImage(ctx context.Context, sel ast.Selection
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "created_at":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._ProductImage_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._ProductImage_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
-				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

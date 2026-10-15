@@ -119,7 +119,7 @@ func (s *ProductService) GetProducts(page, pageLimit int) ([]dto.ProductResponse
 	var products []models.Product
 	var total int64
 
-	if err := s.db.Model(&models.Product{}).Where("is_active = ?", true).Count((&total)).Error; err != nil {
+	if err := s.db.Model(&models.Product{}).Where("is_active = ?", true).Count(&total).Error; err != nil {
 		return nil, nil, err
 	}
 

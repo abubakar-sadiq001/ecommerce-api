@@ -55,13 +55,11 @@ func main() {
 	db, err := database.New(&cfg.Database)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to database")
-		fmt.Println("database Err")
 	}
 
 	mainDB, err := db.DB()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to get database connection")
-		fmt.Println("mainDB Err")
 	}
 	defer mainDB.Close()
 

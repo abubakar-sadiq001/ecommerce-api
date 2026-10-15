@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: ecommerce_shop
     ports: # This maps a port on your computer (the host) to a port inside the container.
-      - "5433:5432"
+      - "5432:5433"
     volumes: # Volumes are how Docker persists data. By default, if you delete a container, all its data is lost. This line tells Docker to save the database's internal data folder (/var/lib/postgresql/data) into a permanent, named storage area on your computer called postgres_data. If you restart or delete the container, your database tables and data will still be there when it comes back up.
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

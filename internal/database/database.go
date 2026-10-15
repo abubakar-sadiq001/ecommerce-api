@@ -19,7 +19,6 @@ func New(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
-		fmt.Println("connection Err", err)
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 

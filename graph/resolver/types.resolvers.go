@@ -8,7 +8,6 @@ package resolver
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/abubakar-sadiq001/learning-go-shop/graph"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
@@ -31,22 +30,12 @@ func (r *cartItemResolver) ID(ctx context.Context, obj *dto.CartItemResponse) (s
 
 // Subtotal is the resolver for the subtotal field.
 func (r *cartItemResolver) Subtotal(ctx context.Context, obj *dto.CartItemResponse) (float64, error) {
-	panic(fmt.Errorf("not implemented: Subtotal - subtotal"))
+	return float64(obj.Total), nil
 }
 
 // ID is the resolver for the id field.
 func (r *categoryResolver) ID(ctx context.Context, obj *dto.CategoryResponse) (string, error) {
 	return fmt.Sprintf("%d", obj.ID), nil
-}
-
-// CreatedAt is the resolver for the created_at field.
-func (r *categoryResolver) CreatedAt(ctx context.Context, obj *dto.CategoryResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
-}
-
-// UpdatedAt is the resolver for the updated_at field.
-func (r *categoryResolver) UpdatedAt(ctx context.Context, obj *dto.CategoryResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updated_at"))
 }
 
 // ID is the resolver for the id field.
@@ -66,17 +55,17 @@ func (r *orderItemResolver) ID(ctx context.Context, obj *dto.OrderItemResponse) 
 
 // Quantity is the resolver for the quantity field.
 func (r *orderItemResolver) Quantity(ctx context.Context, obj *dto.OrderItemResponse) (int, error) {
-	panic(fmt.Errorf("not implemented: Quantity - quantity"))
+	return int(obj.Quantity), nil
 }
 
 // ID is the resolver for the id field.
 func (r *productResolver) ID(ctx context.Context, obj *dto.ProductResponse) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
+	return fmt.Sprintf("%d", obj.ID), nil
 }
 
 // CategoryID is the resolver for the category_id field.
 func (r *productResolver) CategoryID(ctx context.Context, obj *dto.ProductResponse) (string, error) {
-	panic(fmt.Errorf("not implemented: CategoryID - category_id"))
+	return fmt.Sprintf("%d", obj.CategoryID), nil
 }
 
 // ID is the resolver for the id field.
@@ -87,16 +76,6 @@ func (r *productImageResolver) ID(ctx context.Context, obj *dto.ProductImageResp
 // ID is the resolver for the id field.
 func (r *userResolver) ID(ctx context.Context, obj *dto.UserResponse) (string, error) {
 	return fmt.Sprintf("%d", obj.ID), nil
-}
-
-// CreatedAt is the resolver for the created_at field.
-func (r *userResolver) CreatedAt(ctx context.Context, obj *dto.UserResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
-}
-
-// UpdatedAt is the resolver for the updated_at field.
-func (r *userResolver) UpdatedAt(ctx context.Context, obj *dto.UserResponse) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updated_at"))
 }
 
 // Cart returns graph.CartResolver implementation.

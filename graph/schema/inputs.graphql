@@ -38,7 +38,7 @@ input CreateProductInput {
   description: String!
   price: Float!
   stock: Int!
-  is_active: Boolean
+  sku: String!
 }
 
 input UpdateProductInput {

@@ -51,11 +51,14 @@ func main() {
 	logger := watermill.NewStdLogger(false, false)
 	subscriber, err := sqs.NewSubscriber(sqs.SubscriberConfig{AWSConfig: awsConfig}, logger)
 	if err != nil {
-		log.Fatal("")
+		log.Fatal(err)
 	}
 
 	// 6. Subscribe to messages
 	messages, err := subscriber.Subscribe(ctx, cfg.AWS.EventQueueName)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// 7. Handle graceful shutdown
 	sigChan := make(chan os.Signal, 1)

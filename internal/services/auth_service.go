@@ -34,9 +34,6 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 	if err := s.db.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
 		return nil, errors.New("you cannot register with this email")
 	}
-	// if _, err := s.userRepo.GetByEmail(req.Email); err == nil {
-	// 	return nil, errors.New("you cannot register with this email")
-	// }
 
 	// 2. Hash password
 	hashedPassword, err := utils.HashPassword(req.Password)
@@ -138,10 +135,6 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 	if err := s.db.Create(&refreshTokenModel).Error; err != nil {
 		return nil, err
 	}
-
-	// if err := s.db.Model(&models.RefreshToken{}).Where("user_id = ?", user.ID).Update("token", refreshToken).Error; err != nil {
-	// 	return nil, err
-	// }
 
 	// 4. Publish login in event
 	err = s.eventPublisher.Publish(notifications.UserLoggedIn, user, map[string]string{})

@@ -205,8 +205,6 @@ func (s *OrderService) convertToOrderResponse(order *models.Order) dto.OrderResp
 
 	}
 
-	// parsedTime, _ := time.Parse(time.RFC3339, order.CreatedAt.Format(defaultDateFormat))
-
 	return dto.OrderResponse{
 		ID:          order.ID,
 		UserID:      order.UserID,

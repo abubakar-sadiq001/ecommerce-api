@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/models"
@@ -206,7 +205,7 @@ func (s *OrderService) convertToOrderResponse(order *models.Order) dto.OrderResp
 
 	}
 
-	parsedTime, _ := time.Parse(time.RFC3339, order.CreatedAt.Format(defaultDateFormat))
+	// parsedTime, _ := time.Parse(time.RFC3339, order.CreatedAt.Format(defaultDateFormat))
 
 	return dto.OrderResponse{
 		ID:          order.ID,
@@ -214,6 +213,7 @@ func (s *OrderService) convertToOrderResponse(order *models.Order) dto.OrderResp
 		Status:      string(order.Status),
 		TotalAmount: order.TotalAmount,
 		OrderItems:  orderItems,
-		CreatedAt:   parsedTime,
+		CreatedAt:   order.CreatedAt,
+		UpdatedAt:   order.UpdatedAt,
 	}
 }

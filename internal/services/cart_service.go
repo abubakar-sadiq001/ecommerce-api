@@ -127,6 +127,8 @@ func (s *CartService) convertToCartResponse(cart *models.Cart) *dto.CartResponse
 				Stock:       cart.CartItems[i].Product.Stock,
 				SKU:         cart.CartItems[i].Product.SKU,
 				IsActive:    cart.CartItems[i].Product.IsActive,
+				CreatedAt:   cart.CartItems[i].Product.CreatedAt,
+				UpdatedAt:   cart.CartItems[i].Product.UpdatedAt,
 				Category: dto.CategoryResponse{
 					ID:          cart.CartItems[i].Product.Category.ID,
 					Name:        cart.CartItems[i].Product.Category.Name,
@@ -144,5 +146,7 @@ func (s *CartService) convertToCartResponse(cart *models.Cart) *dto.CartResponse
 		UserID:    cart.UserID,
 		CartItems: cartItems,
 		Total:     total,
+		CreatedAt: cart.CreatedAt,
+		UpdatedAt: cart.UpdatedAt,
 	}
 }

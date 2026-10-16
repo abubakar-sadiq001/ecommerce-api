@@ -14,6 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var _ AuthServiceInterface = (*AuthService)(nil) // makes the compiler prove that *AuthService satisfies AuthServiceInterface.
+
 type AuthService struct {
 	db             *gorm.DB
 	config         *appconfig.Config

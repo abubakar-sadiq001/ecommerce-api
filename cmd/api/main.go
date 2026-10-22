@@ -15,6 +15,7 @@ import (
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/events"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/interfaces"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/providers"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/repositories"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/server"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/services"
 	"github.com/gin-gonic/gin"
@@ -72,7 +73,14 @@ func main() {
 	}
 	gin.SetMode(cfg.Server.GinMode)
 
-	authService := services.NewAuthService(db, cfg, eventPublisher)
+	userRepo := repositories.NewUserRepository(db)
+	cartRepo := repositories.NewCartRepository(db)
+	authService := services.NewAuthService(
+		cfg,
+		eventPublisher,
+		userRepo,
+		cartRepo,
+	)
 	productService := services.NewProductService(db)
 	userService := services.NewUserService(db)
 

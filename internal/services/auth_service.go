@@ -10,23 +10,25 @@ import (
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/events"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/models"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/notifications"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/repositories"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/utils"
-	"gorm.io/gorm"
 )
 
 var _ AuthServiceInterface = (*AuthService)(nil) // makes the compiler prove that *AuthService satisfies AuthServiceInterface.
 
 type AuthService struct {
-	db             *gorm.DB
+	userRepo       repositories.UserRepositoryInterface
+	cartRepo       repositories.CartRepositoryInterface
 	config         *appconfig.Config
 	eventPublisher events.Publisher
 }
 
-func NewAuthService(db *gorm.DB, config *appconfig.Config, eventPublisher events.Publisher) *AuthService {
+func NewAuthService(config *appconfig.Config, eventPublisher events.Publisher, userRepo repositories.UserRepositoryInterface, cartRepo repositories.CartRepositoryInterface) *AuthService {
 	return &AuthService{
-		db:             db,
 		config:         config,
 		eventPublisher: eventPublisher,
+		userRepo:       userRepo,
+		cartRepo:       cartRepo,
 	}
 }
 

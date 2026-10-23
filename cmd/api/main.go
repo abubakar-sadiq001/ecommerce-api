@@ -75,13 +75,15 @@ func main() {
 
 	userRepo := repositories.NewUserRepository(db)
 	cartRepo := repositories.NewCartRepository(db)
+	productRepo := repositories.NewProductRepository(db)
+
 	authService := services.NewAuthService(
 		cfg,
 		eventPublisher,
 		userRepo,
 		cartRepo,
 	)
-	productService := services.NewProductService(db)
+	productService := services.NewProductService(db, productRepo)
 	userService := services.NewUserService(db)
 
 	var uploadProvider interfaces.UploadProvider

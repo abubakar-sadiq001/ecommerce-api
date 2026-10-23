@@ -66,3 +66,7 @@ func (r *UserRepository) DeleteRefreshToken(token string) error {
 func (r *UserRepository) DeleteRefreshTokenByID(id uint) error {
 	return r.db.Delete(&models.RefreshToken{}, id).Error
 }
+
+func (r *UserRepository) DeleteExpiredTokenByID(id uint) error {
+	return r.db.Delete(&models.RefreshToken{}, id).Error
+}

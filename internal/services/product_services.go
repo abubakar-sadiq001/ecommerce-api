@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/dto"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/models"
+	"github.com/abubakar-sadiq001/learning-go-shop/internal/repositories"
 	"github.com/abubakar-sadiq001/learning-go-shop/internal/utils"
 	"gorm.io/gorm"
 )
@@ -10,12 +11,14 @@ import (
 var _ ProductServiceInterface = (*ProductService)(nil)
 
 type ProductService struct {
-	db *gorm.DB
+	db          *gorm.DB
+	productRepo repositories.ProductRepositoryInterface
 }
 
-func NewProductService(db *gorm.DB) *ProductService {
+func NewProductService(db *gorm.DB, productRepo repositories.ProductRepositoryInterface) *ProductService {
 	return &ProductService{
-		db: db,
+		db:          db,
+		productRepo: productRepo,
 	}
 }
 
@@ -25,7 +28,8 @@ func (s *ProductService) CreateCategory(req *dto.CreateCategoryRequest) (*dto.Ca
 		Description: req.Description,
 	}
 
-	if err := s.db.Create(&category).Error; err != nil {
+	err := s.productRepo.Create(&category)
+	if err != nil {
 		return nil, err
 	}
 
@@ -41,8 +45,9 @@ func (s *ProductService) CreateCategory(req *dto.CreateCategoryRequest) (*dto.Ca
 }
 
 func (s *ProductService) GetCategories() ([]dto.CategoryResponse, error) {
-	var categories []models.Category
-	if err := s.db.Where("is_active = ?", true).Find(&categories).Error; err != nil {
+
+	categories, err := s.productRepo.FindByIsActive()
+	if err != nil {
 		return nil, err
 	}
 
@@ -62,8 +67,8 @@ func (s *ProductService) GetCategories() ([]dto.CategoryResponse, error) {
 }
 
 func (s *ProductService) UpdateCategory(id uint, req *dto.UpdateCategoryRequest) (*dto.CategoryResponse, error) {
-	var category models.Category
-	if err := s.db.First(&category, id).Error; err != nil {
+	category, err := s.productRepo.FindByID(id)
+	if err != nil {
 		return nil, err
 	}
 
@@ -73,7 +78,8 @@ func (s *ProductService) UpdateCategory(id uint, req *dto.UpdateCategoryRequest)
 		category.IsActive = *req.IsActive
 	}
 
-	if err := s.db.Save(&category).Error; err != nil {
+	err = s.productRepo.Update(category)
+	if err != nil {
 		return nil, err
 	}
 
@@ -88,7 +94,11 @@ func (s *ProductService) UpdateCategory(id uint, req *dto.UpdateCategoryRequest)
 }
 
 func (s *ProductService) DeleteCategory(id uint) error {
-	return s.db.Delete(&models.Category{}, id).Error
+	err := s.productRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ProductService) CreateProduct(req *dto.CreateProductRequest) (*dto.ProductResponse, error) {
@@ -101,7 +111,7 @@ func (s *ProductService) CreateProduct(req *dto.CreateProductRequest) (*dto.Prod
 		SKU:         req.SKU,
 	}
 
-	if err := s.db.Create(&product).Error; err != nil {
+	if err := s.productRepo.InsertNewProduct(&product); err != nil {
 		return nil, err
 	}
 
@@ -119,8 +129,8 @@ func (s *ProductService) GetProducts(page, pageLimit int) ([]dto.ProductResponse
 
 	offset := (page - 1) * pageLimit
 	var products []models.Product
-	var total int64
 
+	var total int64
 	if err := s.db.Model(&models.Product{}).Where("is_active = ?", true).Count(&total).Error; err != nil {
 		return nil, nil, err
 	}
@@ -187,21 +197,26 @@ func (s *ProductService) UpdateProduct(id uint, req *dto.UpdateProductRequest) (
 
 // AddProductImage saves the image data as new record to the [product_images] table.
 func (s *ProductService) AddProductImage(productID uint, url, altText string) error {
-	var count int64
-	s.db.Model(&models.ProductImage{}).Where("product_id = ?", productID).Count(&count)
+	count, err := s.productRepo.ProductImageCount(productID)
+	if err != nil {
+		return err
+	}
 
 	image := models.ProductImage{
 		ProductID: productID,
 		URL:       url,
 		AltText:   altText,
-		IsPrimary: count == 0,
+		IsPrimary: int(*count) == 0,
 	}
 
-	return s.db.Create(&image).Error
+	if err := s.productRepo.InsertProductImage(&image); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ProductService) DeleteProduct(id uint) error {
-	return s.db.Delete(&models.Product{}, id).Error
+	return s.productRepo.DeleteProduct(id)
 }
 
 func (s *ProductService) convertToProductResponse(product *models.Product) dto.ProductResponse {

@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	appconfig "github.com/abubakar-sadiq001/learning-go-shop/internal/config"
@@ -34,8 +35,7 @@ func NewAuthService(config *appconfig.Config, eventPublisher events.Publisher, u
 
 func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, error) {
 	// 1. Check if user exists
-	var existingUser models.User
-	if err := s.db.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
+	if _, err := s.userRepo.GetByEmail(req.Email); err == nil {
 		return nil, errors.New("you cannot register with this email")
 	}
 
@@ -54,14 +54,15 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 		Phone:     req.Phone,
 		Role:      "customer",
 	}
-	if err := s.db.Create(&user).Error; err != nil {
+	if err := s.userRepo.Create(&user); err != nil {
 		return nil, err
 	}
 
 	// 4. Create a cart
 	cart := models.Cart{UserID: user.ID}
-	if err := s.db.Create(&cart).Error; err != nil {
+	if err := s.cartRepo.Create(&cart); err != nil {
 		fmt.Println("Unable to create cart")
+		_ = err
 	}
 
 	// 5. Return generated token
@@ -70,8 +71,8 @@ func (s *AuthService) Register(req *dto.RegisterRequest) (*dto.AuthResponse, err
 
 func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
 	// 1. Find user
-	var user models.User
-	if err := s.db.Where("email = ? AND is_active = ?", req.Email, true).First(&user).Error; err != nil {
+	user, err := s.userRepo.GetByEmailAndActive(req.Email, true)
+	if err != nil {
 		return nil, errors.New("invalid credentials")
 	}
 
@@ -81,7 +82,7 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.AuthResponse, error) {
 	}
 
 	// 3. Return generated token
-	return s.generateAuthResponse(&user)
+	return s.generateAuthResponse(user)
 }
 
 func (s *AuthService) RefreshToken(req *dto.RefreshTokenRequest) (*dto.AuthResponse, error) {
@@ -92,26 +93,28 @@ func (s *AuthService) RefreshToken(req *dto.RefreshTokenRequest) (*dto.AuthRespo
 	}
 
 	// 2. Retrieve and check if token exist or expired
-	var refreshToken models.RefreshToken
-	if err := s.db.Where("token = ? AND expires_at > ?", req.RefreshToken, time.Now()).First(&refreshToken).Error; err != nil {
+	refreshToken, err := s.userRepo.GetValidRefreshToken(req.RefreshToken)
+	if err != nil {
 		return nil, errors.New("refresh token not found or expired")
 	}
 
 	// 3. Retrieve user
-	var user models.User
-	if err := s.db.First(&user, claims.UserID).Error; err != nil {
+	user, err := s.userRepo.GetByID(claims.UserID)
+	if err != nil {
 		return nil, errors.New("user not found")
 	}
 
 	// 4. Delete token if user is not found
-	s.db.Delete(&refreshToken)
+	if err := s.userRepo.DeleteRefreshTokenByID(refreshToken.ID); err != nil {
+
+	}
 
 	// 5. Return generated token
-	return s.generateAuthResponse(&user)
+	return s.generateAuthResponse(user)
 }
 
 func (s *AuthService) Logout(refreshToken string) error {
-	return s.db.Where("token = ?", refreshToken).Delete(&models.RefreshToken{}).Error
+	return s.userRepo.DeleteRefreshToken(refreshToken)
 }
 
 func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse, error) {
@@ -133,11 +136,14 @@ func (s *AuthService) generateAuthResponse(user *models.User) (*dto.AuthResponse
 	}
 
 	// 2. Delete expired tokens or ALL previous tokens for this user first
-	s.db.Where("user_id = ?", user.ID).Delete(&models.RefreshToken{})
+	if err = s.userRepo.DeleteExpiredTokenByID(user.ID); err != nil {
+		return nil, err
+	}
 
 	// 3. Insert the new token
-	if err := s.db.Create(&refreshTokenModel).Error; err != nil {
-		return nil, err
+	if err := s.userRepo.CreateRefreshToken(&refreshTokenModel); err != nil {
+		log.Println()
+		_ = err
 	}
 
 	// 4. Publish login in event

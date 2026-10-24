@@ -219,6 +219,68 @@ func (s *ProductService) DeleteProduct(id uint) error {
 	return s.productRepo.DeleteProduct(id)
 }
 
+func (s *ProductService) SearchProduct(req *dto.SearchProductsRequest) ([]dto.ProductSearchResult, *utils.PaginationMeta, error) {
+	if req.Page < 1 {
+		req.Page = 1
+	}
+
+	if req.Limit < 1 {
+		req.Limit = 10
+	}
+
+	offset := (req.Page - 1) * req.Limit
+
+	query := s.db.Model(&models.Product{}).
+		Select("products.*, ts_rank(search_vector, plainto_tsquery('english', ?)) as rank", req.Query).
+		Where("search_vector @@ plainto_tsquery('english', ?)", req.Query).
+		Where("is_active=?", true)
+
+	if req.CategoryID != nil {
+		query = query.Where("category_id = ?", *req.CategoryID)
+	}
+
+	if req.MinPrice != nil {
+		query = query.Where("price >= ?", *req.MinPrice)
+	}
+
+	if req.MaxPrice != nil {
+		query = query.Where("price <= ?", *req.MaxPrice)
+	}
+
+	// Count total results
+	var total int64
+	query.Count(&total)
+
+	var products []models.Product
+	if err := query.
+		Order("rank DESC, created_at DESC").
+		Preload("Category").
+		Preload("Images").
+		Offset(offset).
+		Limit(offset).
+		Find(&products).Error; err != nil {
+		return nil, nil, err
+	}
+
+	results := make([]dto.ProductSearchResult, len(products))
+	for i := range products {
+		results[i] = dto.ProductSearchResult{
+			ProductResponse: s.convertToProductResponse(&products[i]),
+			Rank:            0.0,
+		}
+	}
+
+	totalPages := int((total + int64(req.Limit) - 1) / int64(req.Limit))
+	meta := &utils.PaginationMeta{
+		Page:       req.Page,
+		Limit:      req.Limit,
+		Total:      total,
+		TotalPages: totalPages,
+	}
+
+	return results, meta, nil
+}
+
 func (s *ProductService) convertToProductResponse(product *models.Product) dto.ProductResponse {
 	images := make([]dto.ProductImageResponse, len(product.Images))
 	for i := range product.Images {

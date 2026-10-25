@@ -219,7 +219,7 @@ func (s *ProductService) DeleteProduct(id uint) error {
 	return s.productRepo.DeleteProduct(id)
 }
 
-func (s *ProductService) SearchProduct(req *dto.SearchProductsRequest) ([]dto.ProductSearchResult, *utils.PaginationMeta, error) {
+func (s *ProductService) SearchProducts(req *dto.SearchProductsRequest) ([]dto.ProductSearchResult, *utils.PaginationMeta, error) {
 	if req.Page < 1 {
 		req.Page = 1
 	}
@@ -233,7 +233,7 @@ func (s *ProductService) SearchProduct(req *dto.SearchProductsRequest) ([]dto.Pr
 	query := s.db.Model(&models.Product{}).
 		Select("products.*, ts_rank(search_vector, plainto_tsquery('english', ?)) as rank", req.Query).
 		Where("search_vector @@ plainto_tsquery('english', ?)", req.Query).
-		Where("is_active=?", true)
+		Where("is_active = ?", true)
 
 	if req.CategoryID != nil {
 		query = query.Where("category_id = ?", *req.CategoryID)
@@ -251,22 +251,27 @@ func (s *ProductService) SearchProduct(req *dto.SearchProductsRequest) ([]dto.Pr
 	var total int64
 	query.Count(&total)
 
-	var products []models.Product
+	type ProductsWithRank struct {
+		models.Product
+		Rank float32 `gorm:"column:rank"`
+	}
+
+	var rows []ProductsWithRank
 	if err := query.
 		Order("rank DESC, created_at DESC").
 		Preload("Category").
 		Preload("Images").
 		Offset(offset).
-		Limit(offset).
-		Find(&products).Error; err != nil {
+		Limit(req.Limit).
+		Find(&rows).Error; err != nil {
 		return nil, nil, err
 	}
 
-	results := make([]dto.ProductSearchResult, len(products))
-	for i := range products {
+	results := make([]dto.ProductSearchResult, len(rows))
+	for i := range rows {
 		results[i] = dto.ProductSearchResult{
-			ProductResponse: s.convertToProductResponse(&products[i]),
-			Rank:            0.0,
+			ProductResponse: s.convertToProductResponse(&rows[i].Product),
+			Rank:            rows[i].Rank,
 		}
 	}
 

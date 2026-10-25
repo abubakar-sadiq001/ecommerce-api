@@ -74,5 +74,5 @@ type SearchProductsRequest struct {
 
 type ProductSearchResult struct {
 	ProductResponse
-	Rank float64 `json:"rank"`
+	Rank float32 `json:"rank"`
 }
